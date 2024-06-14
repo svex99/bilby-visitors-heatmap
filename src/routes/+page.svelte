@@ -1,4 +1,33 @@
 <script lang="ts">
+	import { trpcServer } from '$lib/trpc';
+	import PeriodDropdown from '$lib/components/periodDropdown.svelte';
+	import type { GetVisitorsByCountryParams } from '$server/validations/getVisitorsByCountry.schema.js';
+	import { TRPCClientError } from '@trpc/client';
+
+	export let data;
+
+	// Load the initial data for the page from the load function in the route.
+	let visitors = data.visitorsByCountry;
+
+	let period: GetVisitorsByCountryParams['period'] = 'last_week';
+	let loading = false;
+	let errors: { message: string }[] = [];
+
+	async function fetchVisitors() {
+		loading = true;
+
+		try {
+			visitors = await trpcServer(fetch).visitors.getVisitorsByCountry.query({ period });
+		} catch (err) {	
+			if (err instanceof TRPCClientError) {
+				errors = JSON.parse(err.message);
+			} else {
+				throw err;
+			}
+		} finally {
+			loading = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -9,8 +38,18 @@
 	<div class="flex justify-between items-center">
 		<h1 class="text-4xl font-medium leading-relaxed items-center">Web Traffics</h1>
 
-		<!-- Dropdown should be here -->
+		<PeriodDropdown bind:value={period} on:change={fetchVisitors} />
 	</div>
 
-	<div class="border rounded-lg bg-white p-5">heatmap</div>
+	<div class="border rounded-lg bg-white p-5">
+		{#if errors.length}
+			<div class="text-red-500">
+				{#each errors as error}
+					<p>{error.message}</p>
+				{/each}
+			</div>
+		{:else}
+			heatmap
+		{/if}
+	</div>
 </div>

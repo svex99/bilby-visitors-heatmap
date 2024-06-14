@@ -21,6 +21,6 @@ export const POST = ((event) =>
 		endpoint: '/api/trpc',
 		createContext: createSvelteKitTRPCContext(event.locals),
 		onError: (e) => {
-			console.error(`❌ tRPC GET failed on ${e.path ?? '<no-path>'}: ${e.error.message}`, e);
+			console.error(`❌ tRPC POST failed on ${e.path ?? '<no-path>'}: ${e.error.message}`, e);
 		}
 	})) satisfies RequestHandler;
