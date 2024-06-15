@@ -4,7 +4,7 @@
 </script>
 
 <div class="flex flex-col items-center justify-between min-h-screen bg-gray-50">
-	<nav class="w-full flex py-5 justify-center shadow sticky top-0 left-0 bg-white">
+	<nav class="w-full flex py-5 justify-center shadow sticky top-0 left-0 bg-white z-10">
 		<div class="container">
 			<img src={logo} alt="logo" class="h-12" />
 		</div>

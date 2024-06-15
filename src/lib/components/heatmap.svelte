@@ -1,5 +1,6 @@
 <script lang="ts">
 	import * as d3 from 'd3';
+	import HeatmapTooltip from './heatmapTooltip.svelte';
 
 	export let data: {
 		key: string;
@@ -41,11 +42,17 @@
 		.domain(data.map((country) => country.key))
 		.padding(0.5);
 
-    // Scale of colors to display intensity of values in the heatmap.
-    // The scale goes from 0 to the maximum value of the data points.
+	// Scale of colors to display intensity of values in the heatmap.
+	// The scale goes from 0 to the maximum value of the data points.
 	$: color = d3
 		.scaleSequential(d3.interpolateReds)
 		.domain([0, d3.max(dataPoints, (d) => d.value) ?? 0]);
+
+	// Track the hovered data point data to show the tooltip.
+	let currentDataPoint: (typeof dataPoints)[0] | null = null;
+	// Track the position to place the tooltip.
+	let leftPos = 0;
+	let topPos = 0;
 
 	let svgEl: SVGElement;
 
@@ -99,14 +106,20 @@
 			.data(dataPoints)
 			.enter()
 			.append('circle')
-			.attr('cx', (d) => x(`${d.hour + 1}`) ?? 0)
-			.attr('cy', (d) => y(d.country) ?? 0)
+			.attr('cx', (dataPoint) => x(`${dataPoint.hour + 1}`) ?? 0)
+			.attr('cy', (dataPoint) => y(dataPoint.country) ?? 0)
 			.attr('r', 15)
-			.attr('fill', (d) => color(d.value));
+			.attr('fill', (d) => color(d.value))
+			.on('mouseenter', (_, dataPoint) => {
+				currentDataPoint = dataPoint;
+			})
+			.on('mouseleave', () => {
+				currentDataPoint = null;
+			});
 	}
 </script>
 
-<div class="space-y-3">
+<div class="">
 	<h3 class="text-xl font-medium leading-relaxed">Unique Destinations Heatmap</h3>
 	<!-- Using #key here destroys the whole svg element when the data points change. -->
 	<!-- This is almost required, because we need to remove from the svg all the elements from the previous heatmap displayed. -->
@@ -114,6 +127,20 @@
 	<!-- The only element that is not subject to change is the X-axis, but countries (Y-axis) could change its order. -->
 	<!-- Due that we should recreate almost the whole svg, it's preferable to use #key than to use a granular and bug-prone approach. -->
 	{#key dataPoints}
-		<svg bind:this={svgEl} {width} {height}></svg>
+		<svg
+			bind:this={svgEl}
+			{width}
+			{height}
+			role="img"
+			on:mousemove={(event) => {
+				leftPos = event.pageX;
+				topPos = event.pageY;
+			}}
+		>
+		</svg>
 	{/key}
 </div>
+
+{#if currentDataPoint}
+	<HeatmapTooltip data={currentDataPoint} {leftPos} {topPos} />
+{/if}
