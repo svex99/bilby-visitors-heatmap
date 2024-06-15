@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { trpcServer } from '$lib/trpc';
 	import PeriodDropdown from '$lib/components/periodDropdown.svelte';
-	import type { GetVisitorsByCountryParams } from '$server/validations/getVisitorsByCountry.schema.js';
+	import Heatmap from '$lib/components/heatmap.svelte';
+	import { trpcServer } from '$lib/trpc';
+	import type { GetVisitorsByCountryParams } from '$server/validations/getVisitorsByCountry.schema';
 	import { TRPCClientError } from '@trpc/client';
 
 	export let data;
@@ -18,7 +19,7 @@
 
 		try {
 			visitors = await trpcServer(fetch).visitors.getVisitorsByCountry.query({ period });
-		} catch (err) {	
+		} catch (err) {
 			if (err instanceof TRPCClientError) {
 				errors = JSON.parse(err.message);
 			} else {
@@ -49,7 +50,7 @@
 				{/each}
 			</div>
 		{:else}
-			heatmap
+			<Heatmap data={visitors} />
 		{/if}
 	</div>
 </div>
