@@ -35,14 +35,14 @@
 	<title>Home - Web Traffics</title>
 </svelte:head>
 
-<div class="space-y-10">
-	<div class="flex justify-between items-center">
+<div class="space-y-5">
+	<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
 		<h1 class="text-4xl font-medium leading-relaxed items-center">Web Traffics</h1>
 
-		<PeriodDropdown bind:value={period} on:change={fetchVisitors} />
+		<PeriodDropdown bind:value={period} on:change={fetchVisitors} class="self-end sm:self-auto" />
 	</div>
 
-	<div class="border rounded-lg bg-white p-5">
+	<div class="border rounded-lg bg-white p-5 shadow-sm">
 		{#if errors.length}
 			<div class="text-red-500">
 				{#each errors as error}

@@ -1,6 +1,9 @@
 <script lang="ts">
 	export let value: string;
 
+	let className = '';
+	export { className as class };
+
 	const options = [
 		{
 			value: 'last_week',
@@ -25,7 +28,11 @@
 	];
 </script>
 
-<select bind:value on:change>
+<select
+	bind:value
+	on:change
+	class="px-5 py-3 rounded-lg text-gray-500 bg-white border shadow-sm {className}"
+>
 	{#each options as option}
 		<option value={option.value}>Show Me {option.label}</option>
 	{/each}
