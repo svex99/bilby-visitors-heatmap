@@ -124,18 +124,30 @@
 			.attr('cy', (dataPoint) => y(dataPoint.country) ?? 0)
 			.attr('r', 15)
 			.attr('fill', (d) => color(d.value))
-			.on('mouseenter', (_, dataPoint) => {
-				tooltipDataPoint = dataPoint;
-			})
+			.attr('tabindex', '0')
+			// Show tooltip on desktop when the mouse enters a cell.
+			.on('mouseenter', setTooltip)
+			// Hide tooltip on desktop when the mouse leaves a cell.
 			.on('mouseleave', () => {
 				tooltipDataPoint = null;
 			})
-			// We need to handle this event to show the tooltip on mobile devices.
-			.on('click', (event, dataPoint) => {
-				tooltipDataPoint = dataPoint;
-				tooltipLeftPos = event.pageX;
-				tooltipTopPos = event.pageY;
+			// Show tooltip on mobile when the cell is clicked.
+			.on('click', setTooltip)
+			// Show tooltip when the cell is focused for keyboard navigation.
+			.on('focus', setTooltip)
+			// Hide the tooltip on Escape key.
+			.on('keydown', (event) => {
+				if (event.key === 'Escape') {
+					tooltipDataPoint = null;
+				}
 			});
+	}
+
+	function setTooltip(event: any, dataPoint: typeof dataPoints[0]) {
+		tooltipDataPoint = dataPoint;
+		const rect = event.srcElement.getBoundingClientRect();
+		tooltipLeftPos = document.documentElement.scrollLeft + rect.left;
+		tooltipTopPos = document.documentElement.scrollTop + rect.top;
 	}
 </script>
 
@@ -148,12 +160,18 @@
 	<!-- Due that we should recreate almost the whole svg, it's preferable to use #key than to use a granular and bug-prone approach. -->
 	<div class="overflow-x-auto w-full" bind:this={heatMapContainer}>
 		{#key dataPoints || width || height}
+			<!-- Ignore a11y issues since basically we want to handle bubbling clicks from cells in the SVG,
+			tose cells are already interactive and have the proper semantics. -->
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 			<svg
 				bind:this={svgEl}
 				role="img"
-				on:mousemove={(event) => {
-					tooltipLeftPos = event.pageX;
-					tooltipTopPos = event.pageY;
+				on:click={(event) => {
+					// Hide the tooltip when clicking outside a cell.
+					if (event.target?.nodeName !== 'circle') {
+						tooltipDataPoint = null;
+					}
 				}}
 			>
 			</svg>
