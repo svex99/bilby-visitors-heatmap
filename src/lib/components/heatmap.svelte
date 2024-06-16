@@ -5,9 +5,13 @@
 	export let data: {
 		key: string;
 		hours: {
-			key: number;
-			value: number;
-		}[];
+			buckets: {
+				key: number;
+				unique: {
+					value: number;
+				};
+			}[];
+		};
 	}[];
 
 	const margin = {
@@ -28,12 +32,12 @@
 	// We are removing values with 0 visitors to avoid displaying them in the heatmap differently from missing values.
 	$: dataPoints = data
 		.map((country) =>
-			country.hours
-				.filter((hour) => hour.value !== 0)
+			country.hours.buckets
+				.filter((hour) => hour.unique.value !== 0)
 				.map((hour) => ({
 					country: country.key,
 					hour: hour.key,
-					value: hour.value
+					value: hour.unique.value
 				}))
 		)
 		.flat();
