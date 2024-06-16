@@ -6,7 +6,7 @@
 		key: string;
 		hours: {
 			key: number;
-			unique: number;
+			value: number;
 		}[];
 	}[];
 
@@ -29,11 +29,11 @@
 	$: dataPoints = data
 		.map((country) =>
 			country.hours
-				.filter((hour) => hour.unique !== 0)
+				.filter((hour) => hour.value !== 0)
 				.map((hour) => ({
 					country: country.key,
 					hour: hour.key,
-					value: hour.unique
+					value: hour.value
 				}))
 		)
 		.flat();

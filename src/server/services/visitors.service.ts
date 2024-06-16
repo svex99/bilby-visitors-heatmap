@@ -33,6 +33,11 @@ export class VisitorsService {
 		return { fromDate: lowerBound, toDate: now };
 	}
 
+	/**
+	 * Retrieves visitors by country based on the provided parameters.
+	 * @param params - The parameters for retrieving visitors by country.
+	 * @returns An array of visitors by country, with simplified shape for frontend.
+	 */
 	async getVisitorsByCountry(params: GetVisitorsByCountryParams) {
 		const periodRange = this.getPeriodRange(params.period);
 
@@ -41,7 +46,7 @@ export class VisitorsService {
 		// Return result in a simpler shape for frontend.
 		return visitorsByCountry.map((country) => ({
 			key: country.key,
-			hours: country.hours.buckets.map((hour) => ({ key: hour.key, unique: hour.unique.value }))
+			hours: country.hours.buckets.map((hour) => ({ key: hour.key, value: hour.unique.value }))
 		}));
 	}
 }

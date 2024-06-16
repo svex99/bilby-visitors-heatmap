@@ -20,6 +20,9 @@ type UniqueDestinationsAggregation = {
 	};
 };
 
+/**
+ * Service class for interacting with Elasticsearch.
+ */
 export class ElasticSearchService {
 	private readonly client: Client;
 
@@ -27,6 +30,11 @@ export class ElasticSearchService {
 		this.client = client;
 	}
 
+	/**
+	 * Retrieves the unique visitors by country within a specified date range.
+	 * @param range - The date range to filter the data.
+	 * @returns An array of buckets containing the unique visitors by country.
+	 */
 	async getUniqueVisitorsByCountry(range: { fromDate: Date; toDate: Date }) {
 		const response = await this.client.search<unknown, UniqueDestinationsAggregation>({
 			index: env.ELASTIC_SEARCH_INDEX,
