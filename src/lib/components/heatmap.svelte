@@ -143,7 +143,7 @@
 			});
 	}
 
-	function setTooltip(event: any, dataPoint: typeof dataPoints[0]) {
+	function setTooltip(event: any, dataPoint: (typeof dataPoints)[0]) {
 		tooltipDataPoint = dataPoint;
 		const rect = event.srcElement.getBoundingClientRect();
 		tooltipLeftPos = document.documentElement.scrollLeft + rect.left;
